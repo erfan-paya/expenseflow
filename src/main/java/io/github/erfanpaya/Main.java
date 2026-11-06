@@ -6,7 +6,7 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        ArrayList<String> descrptions = new ArrayList<>();
+        ArrayList<String> descriptions = new ArrayList<>();
         ArrayList<Double> amounts = new ArrayList<>();
         String description;
         double amount;
@@ -20,7 +20,7 @@ public class Main {
         while (true) {
             System.out.print("Enter expense description(or 'done' to finish): ");
             description = scanner.nextLine();
-
+            description = description.trim();
             if (description.equalsIgnoreCase("done")) {
                 break;
             }
@@ -44,13 +44,13 @@ public class Main {
                 continue;
             }
 
-            descrptions.add(description.trim());
+            descriptions.add(description);
             amounts.add(amount);
             System.out.println("Expense added successfully!");
             System.out.println();
         }
 
-        displayExpenses(descrptions, amounts);
+        displayExpenses(descriptions, amounts);
 
         scanner.close();
     }

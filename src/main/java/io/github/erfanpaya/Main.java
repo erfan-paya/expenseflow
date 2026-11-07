@@ -6,8 +6,9 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        ArrayList<String> descriptions = new ArrayList<>();
-        ArrayList<Double> amounts = new ArrayList<>();
+
+        ArrayList<Expense> expenses = new ArrayList<>();
+
         String description;
         double amount;
 
@@ -44,39 +45,38 @@ public class Main {
                 continue;
             }
 
-            descriptions.add(description);
-            amounts.add(amount);
+            expenses.add(new Expense(description, amount));
             System.out.println("Expense added successfully!");
             System.out.println();
         }
 
-        displayExpenses(descriptions, amounts);
+        displayExpenses(expenses);
 
         scanner.close();
     }
 
-    public static double calculateTotal(ArrayList<Double> amounts) {
+    public static double calculateTotal(ArrayList<Expense> expenses) {
         double total = 0;
-        for (Double amount : amounts) {
-            total += amount;
+        for (Expense expense : expenses) {
+            total += expense.getAmount();
         }
 
         return total;
     }
 
-    public static double calculateAverage(ArrayList<Double> amounts) {
-        if (amounts.isEmpty()) return 0;
-        return calculateTotal(amounts) / amounts.size();
+    public static double calculateAverage(ArrayList<Expense> expenses) {
+        if (expenses.isEmpty()) return 0;
+        return calculateTotal(expenses) / expenses.size();
     }
 
-    public static int findMostExpensiveExpenseIndex(ArrayList<Double> amounts) {
-        if (amounts.isEmpty()) return -1;
-        double expensiveAmount = amounts.getFirst();
+    public static int findMostExpensiveExpenseIndex(ArrayList<Expense> expenses) {
+        if (expenses.isEmpty()) return -1;
+        double expensiveAmount = expenses.getFirst().getAmount();
         int index = 0;
 
-        for (int i = 0; i < amounts.size(); i++) {
-            if (amounts.get(i) > expensiveAmount) {
-                expensiveAmount = amounts.get(i);
+        for (int i = 0; i < expenses.size(); i++) {
+            if (expenses.get(i).getAmount() > expensiveAmount) {
+                expensiveAmount = expenses.get(i).getAmount();
                 index = i;
             }
         }
@@ -84,13 +84,13 @@ public class Main {
         return index;
     }
 
-    public static int findCheapestExpenseIndex(ArrayList<Double> amounts) {
-        if (amounts.isEmpty()) return -1;
-        double cheapestAmount = amounts.getFirst();
+    public static int findCheapestExpenseIndex(ArrayList<Expense> expenses) {
+        if (expenses.isEmpty()) return -1;
+        double cheapestAmount = expenses.getFirst().getAmount();
         int index = 0;
-        for (int i = 0; i < amounts.size(); i++) {
-            if (amounts.get(i) < cheapestAmount) {
-                cheapestAmount = amounts.get(i);
+        for (int i = 0; i < expenses.size(); i++) {
+            if (expenses.get(i).getAmount() < cheapestAmount) {
+                cheapestAmount = expenses.get(i).getAmount();
                 index = i;
             }
         }
@@ -98,34 +98,34 @@ public class Main {
         return index;
     }
 
-    public static void displayExpenses(ArrayList<String> descriptions, ArrayList<Double> amounts) {
+    public static void displayExpenses(ArrayList<Expense> expenses) {
         System.out.println("==================");
         System.out.println(" Expense Summary ");
         System.out.println("==================");
 
-        for (int i = 0; i < descriptions.size(); i++) {
+        for (int i = 0; i < expenses.size(); i++) {
             System.out.printf("%d. %s -> %.2f%n",
-                    i + 1, descriptions.get(i), amounts.get(i));
+                    i + 1, expenses.get(i).getDescription(), expenses.get(i).getAmount());
         }
 
         System.out.println("------------------");
-        System.out.println("Total expenses: " + descriptions.size());
-        System.out.printf("Total amount: %.2f%n", calculateTotal(amounts));
+        System.out.println("Total expenses: " + expenses.size());
+        System.out.printf("Total amount: %.2f%n", calculateTotal(expenses));
 
-        if (amounts.isEmpty()) {
+        if (expenses.isEmpty()) {
             System.out.println("Average expense: N/A");
             System.out.println();
             System.out.println("No expenses recorded yet.");
             System.out.println("==================");
             return;
         }
-        System.out.printf("Average expense: %.2f%n", calculateAverage(amounts));
+        System.out.printf("Average expense: %.2f%n", calculateAverage(expenses));
 
-        int mostExpensiveIndex = findMostExpensiveExpenseIndex(amounts);
-        int cheapestIndex = findCheapestExpenseIndex(amounts);
+        int mostExpensiveIndex = findMostExpensiveExpenseIndex(expenses);
+        int cheapestIndex = findCheapestExpenseIndex(expenses);
         System.out.println();
-        System.out.printf("Most expensive: %s -> %.2f%n", descriptions.get(mostExpensiveIndex), amounts.get(mostExpensiveIndex));
-        System.out.printf("Cheapest: %s -> %.2f%n", descriptions.get(cheapestIndex), amounts.get(cheapestIndex));
+        System.out.printf("Most expensive: %s -> %.2f%n", expenses.get(mostExpensiveIndex).getDescription(), expenses.get(mostExpensiveIndex).getAmount());
+        System.out.printf("Cheapest: %s -> %.2f%n", expenses.get(cheapestIndex).getDescription(), expenses.get(cheapestIndex).getAmount());
         System.out.println("==================");
     }
 }

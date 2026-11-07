@@ -1,13 +1,12 @@
 package io.github.erfanpaya;
 
-import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main {
+
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-
-        ArrayList<Expense> expenses = new ArrayList<>();
+        ExpenseManager manager = new ExpenseManager();
 
         String description;
         double amount;
@@ -45,87 +44,48 @@ public class Main {
                 continue;
             }
 
-            expenses.add(new Expense(description, amount));
+            manager.add(new Expense(description, amount));
             System.out.println("Expense added successfully!");
             System.out.println();
         }
 
-        displayExpenses(expenses);
+        displayExpenses(manager);
 
         scanner.close();
     }
 
-    public static double calculateTotal(ArrayList<Expense> expenses) {
-        double total = 0;
-        for (Expense expense : expenses) {
-            total += expense.getAmount();
-        }
-
-        return total;
-    }
-
-    public static double calculateAverage(ArrayList<Expense> expenses) {
-        if (expenses.isEmpty()) return 0;
-        return calculateTotal(expenses) / expenses.size();
-    }
-
-    public static int findMostExpensiveExpenseIndex(ArrayList<Expense> expenses) {
-        if (expenses.isEmpty()) return -1;
-        double expensiveAmount = expenses.getFirst().getAmount();
-        int index = 0;
-
-        for (int i = 0; i < expenses.size(); i++) {
-            if (expenses.get(i).getAmount() > expensiveAmount) {
-                expensiveAmount = expenses.get(i).getAmount();
-                index = i;
-            }
-        }
-
-        return index;
-    }
-
-    public static int findCheapestExpenseIndex(ArrayList<Expense> expenses) {
-        if (expenses.isEmpty()) return -1;
-        double cheapestAmount = expenses.getFirst().getAmount();
-        int index = 0;
-        for (int i = 0; i < expenses.size(); i++) {
-            if (expenses.get(i).getAmount() < cheapestAmount) {
-                cheapestAmount = expenses.get(i).getAmount();
-                index = i;
-            }
-        }
-
-        return index;
-    }
-
-    public static void displayExpenses(ArrayList<Expense> expenses) {
+    public static void displayExpenses(ExpenseManager manager) {
         System.out.println("==================");
         System.out.println(" Expense Summary ");
         System.out.println("==================");
 
-        for (int i = 0; i < expenses.size(); i++) {
+        for (int i = 0; i < manager.count(); i++) {
+            Expense expense = manager.getExpenseByIndex(i);
             System.out.printf("%d. %s -> %.2f%n",
-                    i + 1, expenses.get(i).getDescription(), expenses.get(i).getAmount());
+                    i + 1, expense.getDescription(), expense.getAmount());
         }
 
         System.out.println("------------------");
-        System.out.println("Total expenses: " + expenses.size());
-        System.out.printf("Total amount: %.2f%n", calculateTotal(expenses));
+        System.out.println("Total expenses: " + manager.count());
+        System.out.printf("Total amount: %.2f%n", manager.calculateTotal());
 
-        if (expenses.isEmpty()) {
+        if (manager.count() == 0) {
             System.out.println("Average expense: N/A");
             System.out.println();
             System.out.println("No expenses recorded yet.");
             System.out.println("==================");
             return;
         }
-        System.out.printf("Average expense: %.2f%n", calculateAverage(expenses));
+        System.out.printf("Average expense: %.2f%n", manager.calculateAverage());
 
-        int mostExpensiveIndex = findMostExpensiveExpenseIndex(expenses);
-        int cheapestIndex = findCheapestExpenseIndex(expenses);
+
+        int mostExpensiveIndex = manager.findMostExpensiveExpenseIndex();
+        int cheapestIndex = manager.findCheapestExpenseIndex();
+        Expense mostExpensiveExpense = manager.getExpenseByIndex(mostExpensiveIndex);
+        Expense cheapestExpense = manager.getExpenseByIndex(cheapestIndex);
         System.out.println();
-        System.out.printf("Most expensive: %s -> %.2f%n", expenses.get(mostExpensiveIndex).getDescription(), expenses.get(mostExpensiveIndex).getAmount());
-        System.out.printf("Cheapest: %s -> %.2f%n", expenses.get(cheapestIndex).getDescription(), expenses.get(cheapestIndex).getAmount());
+        System.out.printf("Most expensive: %s -> %.2f%n", mostExpensiveExpense.getDescription(), mostExpensiveExpense.getAmount());
+        System.out.printf("Cheapest: %s -> %.2f%n", cheapestExpense.getDescription(), cheapestExpense.getAmount());
         System.out.println("==================");
     }
 }

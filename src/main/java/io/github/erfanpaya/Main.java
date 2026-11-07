@@ -10,6 +10,7 @@ public class Main {
 
         String description;
         double amount;
+        String category;
 
 
         System.out.println("****************");
@@ -19,14 +20,20 @@ public class Main {
 
         while (true) {
             System.out.print("Enter expense description(or 'done' to finish): ");
-            description = scanner.nextLine();
-            description = description.trim();
+            description = scanner.nextLine().trim();
             if (description.equalsIgnoreCase("done")) {
                 break;
             }
 
             if (description.isBlank()) {
                 System.out.println("Error: description cannot be empty");
+                continue;
+            }
+
+            System.out.print("Enter expense category: ");
+            category = scanner.nextLine().trim();
+            if (category.isBlank()) {
+                System.out.println("Error: category cannot be empty");
                 continue;
             }
 
@@ -44,7 +51,7 @@ public class Main {
                 continue;
             }
 
-            manager.add(new Expense(description, amount));
+            manager.add(new Expense(description, category, amount));
             System.out.println("Expense added successfully!");
             System.out.println();
         }
@@ -61,8 +68,8 @@ public class Main {
 
         for (int i = 0; i < manager.count(); i++) {
             Expense expense = manager.getExpenseByIndex(i);
-            System.out.printf("%d. %s -> %.2f%n",
-                    i + 1, expense.getDescription(), expense.getAmount());
+            System.out.printf("%d. %s -> %s -> %.2f%n",
+                    i + 1, expense.getDescription(), expense.getCategory(), expense.getAmount());
         }
 
         System.out.println("------------------");
@@ -84,8 +91,14 @@ public class Main {
         Expense mostExpensiveExpense = manager.getExpenseByIndex(mostExpensiveIndex);
         Expense cheapestExpense = manager.getExpenseByIndex(cheapestIndex);
         System.out.println();
-        System.out.printf("Most expensive: %s -> %.2f%n", mostExpensiveExpense.getDescription(), mostExpensiveExpense.getAmount());
-        System.out.printf("Cheapest: %s -> %.2f%n", cheapestExpense.getDescription(), cheapestExpense.getAmount());
+        System.out.printf("Most expensive: %s -> %s -> %.2f%n",
+                mostExpensiveExpense.getDescription(),
+                mostExpensiveExpense.getCategory(),
+                mostExpensiveExpense.getAmount());
+        System.out.printf("Cheapest: %s -> %s -> %.2f%n",
+                cheapestExpense.getDescription(),
+                cheapestExpense.getCategory(),
+                cheapestExpense.getAmount());
         System.out.println("==================");
     }
 }

@@ -2,10 +2,12 @@ package io.github.erfanpaya;
 
 public class Expense {
     private final String description;
+    private final String category;
     private final double amount;
 
-    public Expense(String description, double amount) {
+    public Expense(String description, String category, double amount) {
         this.description = description;
+        this.category = category;
         this.amount = amount;
     }
 
@@ -15,5 +17,9 @@ public class Expense {
 
     public double getAmount() {
         return amount;
+    }
+
+    public String getCategory() {
+        return category;
     }
 }

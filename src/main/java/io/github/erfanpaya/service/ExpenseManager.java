@@ -3,23 +3,22 @@ package io.github.erfanpaya.service;
 import io.github.erfanpaya.model.Expense;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 public class ExpenseManager {
-    private final ArrayList<Expense> expenses;
+    private final List<Expense> expenses = new ArrayList<>();
 
-    public ExpenseManager() {
-        this.expenses = new ArrayList<>();
+    public List<Expense> getExpenses() {
+        return List.copyOf(expenses);
     }
 
-    public Expense getExpenseByIndex(int index) {
-        return expenses.get(index);
-    }
-
-    public int count() {
+    public int getExpenseCount() {
         return this.expenses.size();
     }
 
-    public void add(Expense expense) {
+    public void addExpense(Expense expense) {
+        Objects.requireNonNull(expense, "Expense cannot be null");
         this.expenses.add(expense);
     }
 
@@ -34,35 +33,32 @@ public class ExpenseManager {
 
     public double calculateAverage() {
         if (expenses.isEmpty()) return 0;
-        return calculateTotal() / count();
+        return calculateTotal() / getExpenseCount();
     }
 
-    public int findMostExpensiveExpenseIndex() {
-        if (expenses.isEmpty()) return -1;
-        double expensiveAmount = expenses.getFirst().getAmount();
-        int index = 0;
+    public Expense findMostExpensiveExpense() {
+        if (expenses.isEmpty()) return null;
+        Expense expensiveExpense = expenses.getFirst();
 
-        for (int i = 1; i < expenses.size(); i++) {
-            if (expenses.get(i).getAmount() > expensiveAmount) {
-                expensiveAmount = expenses.get(i).getAmount();
-                index = i;
+        for (Expense expense : expenses) {
+            if (expense.getAmount() > expensiveExpense.getAmount()) {
+                expensiveExpense = expense;
             }
         }
 
-        return index;
+        return expensiveExpense;
     }
 
-    public int findCheapestExpenseIndex() {
-        if (expenses.isEmpty()) return -1;
-        double cheapestAmount = expenses.getFirst().getAmount();
-        int index = 0;
-        for (int i = 1; i < expenses.size(); i++) {
-            if (expenses.get(i).getAmount() < cheapestAmount) {
-                cheapestAmount = expenses.get(i).getAmount();
-                index = i;
+    public Expense findCheapestExpense() {
+        if (expenses.isEmpty()) return null;
+        Expense cheapestExpense = expenses.getFirst();
+
+        for (Expense expense : expenses) {
+            if (expense.getAmount() < cheapestExpense.getAmount()) {
+                cheapestExpense = expense;
             }
         }
 
-        return index;
+        return cheapestExpense;
     }
 }

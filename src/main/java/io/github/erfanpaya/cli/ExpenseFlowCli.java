@@ -59,7 +59,7 @@ public class ExpenseFlowCli {
         String category = readNonBlank("Enter expense category: ", "category");
         double amount = readAmount();
 
-        manager.add(new Expense(description, category, amount));
+        manager.addExpense(new Expense(description, category, amount));
         System.out.println("Expense added successfully!");
         System.out.println();
     }
@@ -83,7 +83,7 @@ public class ExpenseFlowCli {
             System.out.print("Enter expense amount: ");
             try {
                 double amount = Double.parseDouble(scanner.nextLine().trim());
-                if (amount > 0 && !Double.isInfinite(amount)) {
+                if (amount > 0 && Double.isFinite(amount)) {
                     return amount;
                 }
                 System.out.println("Error: amount must be a positive number");
@@ -109,61 +109,65 @@ public class ExpenseFlowCli {
         System.out.print("Choose an option: ");
     }
 
+    private void displayExpenses() {
+        int index = 1;
+
+        for (Expense expense : manager.getExpenses()) {
+            System.out.printf("%d. %s%n", index++, expense);
+        }
+    }
+
     private void displayAllExpenses() {
         System.out.println(BORDER);
         System.out.println(" All Expenses ");
         System.out.println(BORDER);
 
-        if (manager.count() == 0) {
+        if (manager.getExpenseCount() == 0) {
             System.out.println("No expenses recorded yet.");
         }
 
-        for (int i = 0; i < manager.count(); i++) {
-            System.out.printf("%d. %s%n", i + 1, manager.getExpenseByIndex(i));
-        }
+        displayExpenses();
 
         System.out.println(BORDER);
         System.out.println();
     }
 
-    private void displaySummary() {
+    private void displaySummaryHeader() {
         System.out.println(BORDER);
         System.out.println(" Expense Summary ");
         System.out.println(BORDER);
+    }
 
-        for (int i = 0; i < manager.count(); i++) {
-            Expense expense = manager.getExpenseByIndex(i);
-            System.out.printf("%d. %s -> %s -> %.2f%n",
-                    i + 1, expense.getDescription(), expense.getCategory(), expense.getAmount());
-        }
-
-        System.out.println(SEPARATOR);
-        System.out.println("Total expenses: " + manager.count());
+    private void displayExpenseStatistics() {
+        System.out.println("Total expenses: " + manager.getExpenseCount());
         System.out.printf("Total amount: %.2f%n", manager.calculateTotal());
+    }
 
-        if (manager.count() == 0) {
+    private void displayMostAndCheapestExpenses() {
+        Expense mostExpensiveExpense = manager.findMostExpensiveExpense();
+        Expense cheapestExpense = manager.findCheapestExpense();
+
+        System.out.printf("Most expensive: %s%n", mostExpensiveExpense);
+        System.out.printf("Cheapest: %s%n", cheapestExpense);
+    }
+
+    private void displaySummary() {
+        displaySummaryHeader();
+        displayExpenseStatistics();
+
+        if (manager.getExpenseCount() == 0) {
             System.out.println("Average expense: N/A");
-            System.out.println();
             System.out.println("No expenses recorded yet.");
             System.out.println(BORDER);
             return;
         }
+
+        displayExpenses();
+        System.out.println(SEPARATOR);
+
         System.out.printf("Average expense: %.2f%n", manager.calculateAverage());
 
-
-        int mostExpensiveIndex = manager.findMostExpensiveExpenseIndex();
-        int cheapestIndex = manager.findCheapestExpenseIndex();
-        Expense mostExpensiveExpense = manager.getExpenseByIndex(mostExpensiveIndex);
-        Expense cheapestExpense = manager.getExpenseByIndex(cheapestIndex);
-        System.out.println();
-        System.out.printf("Most expensive: %s -> %s -> %.2f%n",
-                mostExpensiveExpense.getDescription(),
-                mostExpensiveExpense.getCategory(),
-                mostExpensiveExpense.getAmount());
-        System.out.printf("Cheapest: %s -> %s -> %.2f%n",
-                cheapestExpense.getDescription(),
-                cheapestExpense.getCategory(),
-                cheapestExpense.getAmount());
-        System.out.println("==================");
+        displayMostAndCheapestExpenses();
+        System.out.println(BORDER);
     }
 }

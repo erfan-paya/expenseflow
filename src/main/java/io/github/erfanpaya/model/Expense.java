@@ -1,4 +1,4 @@
-package io.github.erfanpaya;
+package io.github.erfanpaya.model;
 
 public class Expense {
     private final String description;

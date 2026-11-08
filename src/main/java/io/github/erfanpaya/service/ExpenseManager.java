@@ -1,4 +1,4 @@
-package io.github.erfanpaya;
+package io.github.erfanpaya.service;
 
 import io.github.erfanpaya.model.Expense;
 

@@ -1,6 +1,7 @@
-package io.github.erfanpaya;
+package io.github.erfanpaya.cli;
 
 import io.github.erfanpaya.model.Expense;
+import io.github.erfanpaya.service.ExpenseManager;
 
 import java.util.Scanner;
 

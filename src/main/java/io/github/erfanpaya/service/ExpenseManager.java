@@ -1,5 +1,7 @@
 package io.github.erfanpaya;
 
+import io.github.erfanpaya.model.Expense;
+
 import java.util.ArrayList;
 
 public class ExpenseManager {

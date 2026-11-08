@@ -22,4 +22,10 @@ public class Expense {
     public String getCategory() {
         return category;
     }
+
+    @Override
+    public String toString() {
+        return String.format("%s -> %s -> %.2f",
+                this.getDescription(), this.getCategory(), this.getAmount());
+    }
 }

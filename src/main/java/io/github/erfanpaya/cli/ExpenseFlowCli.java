@@ -153,9 +153,9 @@ public class ExpenseFlowCli {
 
     private void displaySummary() {
         displaySummaryHeader();
-        displayExpenseStatistics();
 
         if (manager.getExpenseCount() == 0) {
+            displayExpenseStatistics();
             System.out.println("Average expense: N/A");
             System.out.println("No expenses recorded yet.");
             System.out.println(BORDER);
@@ -165,6 +165,7 @@ public class ExpenseFlowCli {
         displayExpenses();
         System.out.println(SEPARATOR);
 
+        displayExpenseStatistics();
         System.out.printf("Average expense: %.2f%n", manager.calculateAverage());
 
         displayMostAndCheapestExpenses();

@@ -44,6 +44,23 @@ public class ExpenseManager {
         return List.copyOf(sorted);
     }
 
+    public List<Expense> getExpensesByAmountRange(double minAmount, double maxAmount) {
+        if (minAmount > maxAmount) {
+            throw new IllegalArgumentException(
+                    "minAmount (" + minAmount + ") must not be greater than maxAmount (" + maxAmount + ")");
+        }
+
+        List<Expense> result = new ArrayList<>();
+        for (Expense expense : expenses) {
+            double amount = expense.getAmount();
+            if (amount >= minAmount && amount <= maxAmount) {
+                result.add(expense);
+            }
+        }
+
+        return List.copyOf(result);
+    }
+
     public List<Expense> getExpensesSortedByAmountAscending() {
         List<Expense> sorted = new ArrayList<>(expenses);
         sorted.sort(Comparator.comparingDouble(Expense::getAmount));

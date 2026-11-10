@@ -27,6 +27,19 @@ public class ExpenseManager {
         return expensesByDescription;
     }
 
+    public List<Expense> getExpensesByCategory(String category) {
+        String keyword = category.toLowerCase(Locale.ROOT);
+        List<Expense> expensesByCategory = new ArrayList<>();
+
+        for (Expense expense : expenses) {
+            if (expense.getCategory().toLowerCase(Locale.ROOT).equals(keyword)) {
+                expensesByCategory.add(expense);
+            }
+        }
+
+        return expensesByCategory;
+    }
+
     public int getExpenseCount() {
         return this.expenses.size();
     }

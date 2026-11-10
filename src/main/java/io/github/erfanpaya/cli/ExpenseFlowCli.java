@@ -11,7 +11,8 @@ public class ExpenseFlowCli {
     private static final String VIEW_ALL = "2";
     private static final String VIEW_SUMMARY = "3";
     private static final String SEARCH_EXPENSES = "4";
-    private static final String EXIT = "5";
+    private static final String FILTER_EXPENSES_BY_CATEGORY = "5";
+    private static final String EXIT = "6";
 
     private static final String STARS = "****************";
     private static final String BORDER = "==================";
@@ -49,10 +50,11 @@ public class ExpenseFlowCli {
             case VIEW_ALL -> displayAllExpenses();
             case VIEW_SUMMARY -> displaySummary();
             case SEARCH_EXPENSES -> searchExpenses();
+            case FILTER_EXPENSES_BY_CATEGORY -> filterExpensesByCategory();
             case EXIT -> {
                 return false;
             }
-            default -> System.out.println("Error: invalid choice, please enter 1-5");
+            default -> System.out.println("Error: invalid choice, please enter 1-6");
         }
         return true;
     }
@@ -73,6 +75,20 @@ public class ExpenseFlowCli {
 
         if (selectedExpenses.isEmpty()) {
             System.out.println("No expenses found matching: " + description);
+            System.out.println();
+            return;
+        }
+
+        displayExpenses(selectedExpenses);
+        System.out.println();
+    }
+
+    private void filterExpensesByCategory() {
+        String category = readNonBlank("Enter expense category: ", "category");
+        List<Expense> selectedExpenses = manager.getExpensesByCategory(category);
+
+        if (selectedExpenses.isEmpty()) {
+            System.out.println("No expenses found matching: " + category);
             System.out.println();
             return;
         }
@@ -123,6 +139,7 @@ public class ExpenseFlowCli {
         System.out.println(VIEW_ALL + ". View All Expenses");
         System.out.println(VIEW_SUMMARY + ". View Expense Summary");
         System.out.println(SEARCH_EXPENSES + ". Search Expenses");
+        System.out.println(FILTER_EXPENSES_BY_CATEGORY + ". Filter Expenses by Category");
         System.out.println(EXIT + ". Exit");
         System.out.print("Choose an option: ");
     }

@@ -2,10 +2,8 @@ package io.github.erfanpaya.service;
 
 import io.github.erfanpaya.model.Expense;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
+import java.time.LocalDate;
+import java.util.*;
 
 public class ExpenseManager {
     private final List<Expense> expenses = new ArrayList<>();
@@ -38,6 +36,20 @@ public class ExpenseManager {
         }
 
         return expensesByCategory;
+    }
+
+    public List<Expense> getExpensesSortedByAmountAscending() {
+        List<Expense> copyList = new ArrayList<>(expenses);
+        copyList.sort(Comparator.comparingDouble(Expense::getAmount));
+
+        return List.copyOf(copyList);
+    }
+
+    public List<Expense> getExpensesSortedByAmountDescending() {
+        List<Expense> copyList = new ArrayList<>(expenses);
+        copyList.sort(Comparator.comparingDouble(Expense::getAmount).reversed());
+
+        return List.copyOf(copyList);
     }
 
     public int getExpenseCount() {

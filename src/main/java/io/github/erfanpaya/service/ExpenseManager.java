@@ -4,6 +4,7 @@ import io.github.erfanpaya.model.Expense;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 public class ExpenseManager {
@@ -11,6 +12,19 @@ public class ExpenseManager {
 
     public List<Expense> getExpenses() {
         return List.copyOf(expenses);
+    }
+
+    public List<Expense> getExpensesByDescription(String description) {
+        String keyword = description.toLowerCase(Locale.ROOT);
+        List<Expense> expensesByDescription = new ArrayList<>();
+
+        for (Expense expense : expenses) {
+            if (expense.getDescription().toLowerCase(Locale.ROOT).contains(keyword)) {
+                expensesByDescription.add(expense);
+            }
+        }
+
+        return expensesByDescription;
     }
 
     public int getExpenseCount() {

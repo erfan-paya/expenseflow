@@ -3,13 +3,15 @@ package io.github.erfanpaya.cli;
 import io.github.erfanpaya.model.Expense;
 import io.github.erfanpaya.service.ExpenseManager;
 
+import java.util.List;
 import java.util.Scanner;
 
 public class ExpenseFlowCli {
     private static final String ADD_EXPENSE = "1";
     private static final String VIEW_ALL = "2";
     private static final String VIEW_SUMMARY = "3";
-    private static final String EXIT = "4";
+    private static final String SEARCH_EXPENSES = "4";
+    private static final String EXIT = "5";
 
     private static final String STARS = "****************";
     private static final String BORDER = "==================";
@@ -46,10 +48,11 @@ public class ExpenseFlowCli {
             case ADD_EXPENSE -> addExpense();
             case VIEW_ALL -> displayAllExpenses();
             case VIEW_SUMMARY -> displaySummary();
+            case SEARCH_EXPENSES -> searchExpenses();
             case EXIT -> {
                 return false;
             }
-            default -> System.out.println("Error: invalid choice, please enter 1-4");
+            default -> System.out.println("Error: invalid choice, please enter 1-5");
         }
         return true;
     }
@@ -61,6 +64,20 @@ public class ExpenseFlowCli {
 
         manager.addExpense(new Expense(description, category, amount));
         System.out.println("Expense added successfully!");
+        System.out.println();
+    }
+
+    private void searchExpenses() {
+        String description = readNonBlank("Enter expense description: ", "description");
+        List<Expense> selectedExpenses = manager.getExpensesByDescription(description);
+
+        if (selectedExpenses.isEmpty()) {
+            System.out.println("No expenses found matching: " + description);
+            System.out.println();
+            return;
+        }
+
+        displayExpenses(selectedExpenses);
         System.out.println();
     }
 
@@ -105,14 +122,15 @@ public class ExpenseFlowCli {
         System.out.println(ADD_EXPENSE + ". Add Expense");
         System.out.println(VIEW_ALL + ". View All Expenses");
         System.out.println(VIEW_SUMMARY + ". View Expense Summary");
+        System.out.println(SEARCH_EXPENSES + ". Search Expenses");
         System.out.println(EXIT + ". Exit");
         System.out.print("Choose an option: ");
     }
 
-    private void displayExpenses() {
+    private void displayExpenses(List<Expense> expenses) {
         int index = 1;
 
-        for (Expense expense : manager.getExpenses()) {
+        for (Expense expense : expenses) {
             System.out.printf("%d. %s%n", index++, expense);
         }
     }
@@ -126,7 +144,7 @@ public class ExpenseFlowCli {
             System.out.println("No expenses recorded yet.");
         }
 
-        displayExpenses();
+        displayExpenses(manager.getExpenses());
 
         System.out.println(BORDER);
         System.out.println();
@@ -162,7 +180,7 @@ public class ExpenseFlowCli {
             return;
         }
 
-        displayExpenses();
+        displayExpenses(manager.getExpenses());
         System.out.println(SEPARATOR);
 
         displayExpenseStatistics();

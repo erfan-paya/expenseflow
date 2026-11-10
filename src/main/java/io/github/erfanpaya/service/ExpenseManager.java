@@ -38,18 +38,24 @@ public class ExpenseManager {
         return expensesByCategory;
     }
 
-    public List<Expense> getExpensesSortedByAmountAscending() {
-        List<Expense> copyList = new ArrayList<>(expenses);
-        copyList.sort(Comparator.comparingDouble(Expense::getAmount));
+    public List<Expense> getExpensesSortedByDescription() {
+        List<Expense> sorted = new ArrayList<>(expenses);
+        sorted.sort(Comparator.comparing(Expense::getDescription, String.CASE_INSENSITIVE_ORDER));
+        return List.copyOf(sorted);
+    }
 
-        return List.copyOf(copyList);
+    public List<Expense> getExpensesSortedByAmountAscending() {
+        List<Expense> sorted = new ArrayList<>(expenses);
+        sorted.sort(Comparator.comparingDouble(Expense::getAmount));
+
+        return List.copyOf(sorted);
     }
 
     public List<Expense> getExpensesSortedByAmountDescending() {
-        List<Expense> copyList = new ArrayList<>(expenses);
-        copyList.sort(Comparator.comparingDouble(Expense::getAmount).reversed());
+        List<Expense> sorted = new ArrayList<>(expenses);
+        sorted.sort(Comparator.comparingDouble(Expense::getAmount).reversed());
 
-        return List.copyOf(copyList);
+        return List.copyOf(sorted);
     }
 
     public int getExpenseCount() {

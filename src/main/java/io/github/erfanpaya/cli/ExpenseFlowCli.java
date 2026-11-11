@@ -3,6 +3,8 @@ package io.github.erfanpaya.cli;
 import io.github.erfanpaya.model.Expense;
 import io.github.erfanpaya.service.ExpenseManager;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -100,7 +102,7 @@ public class ExpenseFlowCli {
     private void addExpense() {
         String description = readNonBlank("Enter expense description: ", "description");
         String category = readNonBlank("Enter expense category: ", "category");
-        double amount = readAmount("Enter expense amount: ");
+        BigDecimal amount = readAmount("Enter expense amount: ");
 
         manager.addExpense(new Expense(description, category, amount));
         System.out.println("Expense added successfully!");
@@ -127,7 +129,7 @@ public class ExpenseFlowCli {
         } else {
             String description = readNonBlank("Enter expense description: ", "description");
             String category = readNonBlank("Enter expense category: ", "category");
-            double amount = readAmount("Enter expense amount: ");
+            BigDecimal amount = readAmount("Enter expense amount: ");
 
             manager.updateExpense(id, description, category, amount);
             System.out.println("Expense updated successfully!");
@@ -188,12 +190,12 @@ public class ExpenseFlowCli {
         }
     }
 
-    private double readAmount(String prompt) {
+    private BigDecimal readAmount(String prompt) {
         while (true) {
             System.out.print(prompt);
             try {
-                double amount = Double.parseDouble(scanner.nextLine().trim());
-                if (amount > 0 && Double.isFinite(amount)) {
+                BigDecimal amount = new BigDecimal(scanner.nextLine().trim());
+                if (amount.compareTo(BigDecimal.ZERO) > 0) {
                     return amount;
                 }
                 System.out.println("Error: amount must be a positive number");
@@ -260,7 +262,7 @@ public class ExpenseFlowCli {
 
     private void displayExpenseStatistics() {
         System.out.println("Total expenses: " + manager.getExpenseCount());
-        System.out.printf("Total amount: %.2f%n", manager.calculateTotal());
+        System.out.printf("Total amount: %s%n", manager.calculateTotal().setScale(2, RoundingMode.HALF_UP));
     }
 
     private void displayMostAndCheapestExpenses() {
@@ -286,7 +288,7 @@ public class ExpenseFlowCli {
         System.out.println(SEPARATOR);
 
         displayExpenseStatistics();
-        System.out.printf("Average expense: %.2f%n", manager.calculateAverage());
+        System.out.printf("Average expense: %s%n", manager.calculateAverage());
 
         displayMostAndCheapestExpenses();
         System.out.println(BORDER);
@@ -295,7 +297,7 @@ public class ExpenseFlowCli {
     private void displaySpendingByCategory() {
         displayHeader(" Spending by Category ");
 
-        Map<String, Double> spendingByCategory = manager.getSpendingByCategory();
+        Map<String, BigDecimal> spendingByCategory = manager.getSpendingByCategory();
 
         if (spendingByCategory.isEmpty()) {
             System.out.println("No spending expenses found.");
@@ -303,13 +305,13 @@ public class ExpenseFlowCli {
             return;
         }
 
-        for (Map.Entry<String, Double> entry : spendingByCategory.entrySet()) {
+        for (Map.Entry<String, BigDecimal> entry : spendingByCategory.entrySet()) {
             String capKey = entry.getKey().substring(0, 1).toUpperCase(Locale.ROOT) + entry.getKey().substring(1);
-            System.out.printf("%s: %.2f%n", capKey, entry.getValue());
+            System.out.printf("%s: %s%n", capKey, entry.getValue().setScale(2, RoundingMode.HALF_UP));
         }
 
         System.out.println(SEPARATOR);
-        System.out.printf("Total spending: %.2f%n", manager.calculateTotal());
+        System.out.printf("Total spending: %s%n", manager.calculateTotal().setScale(2, RoundingMode.HALF_UP));
         System.out.println(BORDER);
     }
 
@@ -317,8 +319,8 @@ public class ExpenseFlowCli {
         displayHeader(" Expenses by Amount Range ");
 
         while (true) {
-            double min = readAmount("Enter minimum amount: ");
-            double max = readAmount("Enter maximum amount: ");
+            BigDecimal min = readAmount("Enter minimum amount: ");
+            BigDecimal max = readAmount("Enter maximum amount: ");
 
             try {
                 List<Expense> expenses = manager.getExpensesByAmountRange(min, max);

@@ -2,6 +2,8 @@ package io.github.erfanpaya.service;
 
 import io.github.erfanpaya.model.Expense;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -45,16 +47,16 @@ public class ExpenseManager {
         return List.copyOf(expensesByCategory);
     }
 
-    public Map<String, Double> getSpendingByCategory() {
-        Map<String, Double> spendingByCategory = new LinkedHashMap<>();
+    public Map<String, BigDecimal> getSpendingByCategory() {
+        Map<String, BigDecimal> spendingByCategory = new LinkedHashMap<>();
 
         for (Expense expense : expenses) {
             String category = expense.getCategory().toLowerCase(Locale.ROOT);
-            double expenseAmount = expense.getAmount();
+            BigDecimal expenseAmount = expense.getAmount();
 
             spendingByCategory.put(
                     category,
-                    spendingByCategory.getOrDefault(category, 0.0) + expenseAmount
+                    spendingByCategory.getOrDefault(category, BigDecimal.ZERO).add(expenseAmount)
             );
         }
 
@@ -67,16 +69,16 @@ public class ExpenseManager {
         return List.copyOf(sorted);
     }
 
-    public List<Expense> getExpensesByAmountRange(double minAmount, double maxAmount) {
-        if (minAmount > maxAmount) {
+    public List<Expense> getExpensesByAmountRange(BigDecimal minAmount, BigDecimal maxAmount) {
+        if (minAmount.compareTo(maxAmount) > 0) {
             throw new IllegalArgumentException(
                     "minAmount (" + minAmount + ") must not be greater than maxAmount (" + maxAmount + ")");
         }
 
         List<Expense> result = new ArrayList<>();
         for (Expense expense : expenses) {
-            double amount = expense.getAmount();
-            if (amount >= minAmount && amount <= maxAmount) {
+            BigDecimal amount = expense.getAmount();
+            if (amount.compareTo(minAmount) >= 0 && amount.compareTo(maxAmount) <= 0) {
                 result.add(expense);
             }
         }
@@ -86,14 +88,14 @@ public class ExpenseManager {
 
     public List<Expense> getExpensesSortedByAmountAscending() {
         List<Expense> sorted = new ArrayList<>(expenses);
-        sorted.sort(Comparator.comparingDouble(Expense::getAmount));
+        sorted.sort(Comparator.comparing(Expense::getAmount));
 
         return List.copyOf(sorted);
     }
 
     public List<Expense> getExpensesSortedByAmountDescending() {
         List<Expense> sorted = new ArrayList<>(expenses);
-        sorted.sort(Comparator.comparingDouble(Expense::getAmount).reversed());
+        sorted.sort(Comparator.comparing(Expense::getAmount).reversed());
 
         return List.copyOf(sorted);
     }
@@ -107,7 +109,7 @@ public class ExpenseManager {
         this.expenses.add(expense);
     }
 
-    public boolean updateExpense(UUID id, String description, String category, double amount) {
+    public boolean updateExpense(UUID id, String description, String category, BigDecimal amount) {
         int selectedExpenseIndex = findExpenseById(id);
 
         if (selectedExpenseIndex == -1) {
@@ -133,7 +135,7 @@ public class ExpenseManager {
     }
 
     //    ------------- Helpers ---------------
-    
+
     public int findExpenseById(UUID id) {
         int selectedExpenseIndex = -1;
         for (int i = 0; i < getExpenseCount(); i++) {
@@ -146,18 +148,18 @@ public class ExpenseManager {
         return selectedExpenseIndex;
     }
 
-    public double calculateTotal() {
-        double total = 0;
+    public BigDecimal calculateTotal() {
+        BigDecimal total = BigDecimal.ZERO;
         for (Expense expense : expenses) {
-            total += expense.getAmount();
+            total = total.add(expense.getAmount());
         }
 
         return total;
     }
 
-    public double calculateAverage() {
-        if (expenses.isEmpty()) return 0;
-        return calculateTotal() / getExpenseCount();
+    public BigDecimal calculateAverage() {
+        if (expenses.isEmpty()) return BigDecimal.ZERO;
+        return calculateTotal().divide(BigDecimal.valueOf(getExpenseCount()), 2, RoundingMode.HALF_UP);
     }
 
     public Expense findMostExpensiveExpense() {
@@ -165,7 +167,7 @@ public class ExpenseManager {
         Expense expensiveExpense = expenses.getFirst();
 
         for (Expense expense : expenses) {
-            if (expense.getAmount() > expensiveExpense.getAmount()) {
+            if (expense.getAmount().compareTo(expensiveExpense.getAmount()) > 0) {
                 expensiveExpense = expense;
             }
         }
@@ -178,7 +180,7 @@ public class ExpenseManager {
         Expense cheapestExpense = expenses.getFirst();
 
         for (Expense expense : expenses) {
-            if (expense.getAmount() < cheapestExpense.getAmount()) {
+            if (expense.getAmount().compareTo(cheapestExpense.getAmount()) < 0) {
                 cheapestExpense = expense;
             }
         }

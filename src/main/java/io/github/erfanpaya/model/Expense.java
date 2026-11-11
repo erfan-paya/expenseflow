@@ -1,14 +1,15 @@
 package io.github.erfanpaya.model;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 public class Expense {
     private final String description;
     private final String category;
-    private final double amount;
+    private final BigDecimal amount;
     private final UUID id;
 
-    public Expense(String description, String category, double amount) {
+    public Expense(String description, String category, BigDecimal amount) {
         if (!validateDescription(description)) {
             throw new IllegalArgumentException("Invalid description");
         }
@@ -25,14 +26,14 @@ public class Expense {
         this.amount = amount;
     }
 
-    private Expense(String description, String category, double amount, UUID id) {
+    private Expense(String description, String category, BigDecimal amount, UUID id) {
         this.description = description;
         this.category = category;
         this.amount = amount;
         this.id = id;
     }
 
-    public Expense withUpdatedDetails(String description, String category, double amount) {
+    public Expense withUpdatedDetails(String description, String category, BigDecimal amount) {
         if (!validateDescription(description)) {
             throw new IllegalArgumentException("Invalid description");
         }
@@ -54,7 +55,7 @@ public class Expense {
         return description;
     }
 
-    public double getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
@@ -70,14 +71,14 @@ public class Expense {
         return category != null && !category.isBlank();
     }
 
-    private boolean validateAmount(double amount) {
-        return amount > 0 && Double.isFinite(amount);
+    private boolean validateAmount(BigDecimal amount) {
+        return amount.compareTo(BigDecimal.ZERO) > 0;
     }
 
 
     @Override
     public String toString() {
-        return String.format("%s -> %s -> %.2f",
+        return String.format("%s -> %s -> %s",
                 this.getDescription(), this.getCategory(), this.getAmount());
     }
 }

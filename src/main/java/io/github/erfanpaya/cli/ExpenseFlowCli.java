@@ -9,24 +9,10 @@ import java.util.Map;
 import java.util.Scanner;
 
 public class ExpenseFlowCli {
-    private static final String ADD_EXPENSE = "1";
-    private static final String VIEW_ALL = "2";
-    private static final String VIEW_SUMMARY = "3";
-    private static final String SEARCH_EXPENSES = "4";
-    private static final String FILTER_EXPENSES_BY_CATEGORY = "5";
-    private static final String VIEW_CATEGORY_SUMMARY = "6";
-    private static final String FILTER_EXPENSES_BY_AMOUNT_RANGE = "7";
-    private static final String SORT_EXPENSES = "8";
-    private static final String EXIT = "0";
-
-    private static final String SORT_BY_DESCRIPTION = "1";
-    private static final String SORT_BY_AMOUNT_ASCENDING = "2";
-    private static final String SORT_BY_AMOUNT_DESCENDING = "3";
-    private static final String SORT_MENU_EXIT = "0";
-
     private static final String STARS = "****************";
     private static final String BORDER = "==================";
     private static final String SEPARATOR = "------------------";
+
     private final Scanner scanner;
     private final ExpenseManager manager;
 
@@ -65,7 +51,14 @@ public class ExpenseFlowCli {
     }
 
     private boolean handleChoice(String choice) {
-        switch (choice) {
+        MainMenuOption option = MainMenuOption.fromOption(choice);
+
+        if (option == null) {
+            System.out.println("Error: invalid choice. Please try again.");
+            return true;
+        }
+
+        switch (option) {
             case ADD_EXPENSE -> addExpense();
             case VIEW_ALL -> displayAllExpenses();
             case VIEW_SUMMARY -> displaySummary();
@@ -77,20 +70,25 @@ public class ExpenseFlowCli {
             case EXIT -> {
                 return false;
             }
-            default -> System.out.println("Error: invalid choice, please enter 0-8");
         }
         return true;
     }
 
     private boolean handleSortChoice(String choice) {
-        switch (choice) {
+        SortMenuOption option = SortMenuOption.fromOption(choice);
+
+        if (option == null) {
+            System.out.println("Error: invalid choice. Please try again.");
+            return true;
+        }
+
+        switch (option) {
             case SORT_BY_DESCRIPTION -> displaySortedExpenses(manager.getExpensesSortedByDescription());
             case SORT_BY_AMOUNT_ASCENDING -> displaySortedExpenses(manager.getExpensesSortedByAmountAscending());
             case SORT_BY_AMOUNT_DESCENDING -> displaySortedExpenses(manager.getExpensesSortedByAmountDescending());
             case SORT_MENU_EXIT -> {
                 return false;
             }
-            default -> System.out.println("Error: invalid choice, please enter 0-3");
         }
 
         return true;
@@ -178,24 +176,23 @@ public class ExpenseFlowCli {
     }
 
     private void displayMenu() {
-        System.out.println(ADD_EXPENSE + ". Add Expense");
-        System.out.println(VIEW_ALL + ". View All Expenses");
-        System.out.println(VIEW_SUMMARY + ". View Expense Summary");
-        System.out.println(SEARCH_EXPENSES + ". Search Expenses");
-        System.out.println(FILTER_EXPENSES_BY_CATEGORY + ". Filter Expenses by Category");
-        System.out.println(VIEW_CATEGORY_SUMMARY + ". View Category Summary");
-        System.out.println(FILTER_EXPENSES_BY_AMOUNT_RANGE + ". Filter Expenses by Amount Range");
-        System.out.println(SORT_EXPENSES + ". Sort Expenses");
-        System.out.println(EXIT + ". Exit");
+        MainMenuOption[] options = MainMenuOption.values();
+
+        for (MainMenuOption option : options) {
+            System.out.println(option.getOption() + ". " + option.getLabel());
+        }
+
         System.out.print("Choose an option: ");
     }
 
     private void displaySortMenu() {
         displayHeader(" Sort Expenses ");
-        System.out.println(SORT_BY_DESCRIPTION + ". Sort Expenses by Description");
-        System.out.println(SORT_BY_AMOUNT_ASCENDING + ". Sort Expenses by Amount Ascending");
-        System.out.println(SORT_BY_AMOUNT_DESCENDING + ". Sort Expenses by Amount Descending");
-        System.out.println(SORT_MENU_EXIT + ". Back to menu");
+
+        SortMenuOption[] options = SortMenuOption.values();
+        for (SortMenuOption option : options) {
+            System.out.println(option.getOption() + ". " + option.getLabel());
+        }
+
         System.out.print("Choose an option: ");
     }
 
@@ -307,5 +304,80 @@ public class ExpenseFlowCli {
         }
 
         displayExpenses(expenses);
+    }
+
+    private enum MainMenuOption {
+        ADD_EXPENSE("1", "Add Expense"),
+        VIEW_ALL("2", "View all Expenses"),
+        VIEW_SUMMARY("3", "View Expenses Summary"),
+        SEARCH_EXPENSES("4", "Search Expenses"),
+        FILTER_EXPENSES_BY_CATEGORY("5", "Filter Expenses by Category"),
+        VIEW_CATEGORY_SUMMARY("6", "View Category Summary"),
+        FILTER_EXPENSES_BY_AMOUNT_RANGE("7", "Filter Expenses by Amount Range"),
+        SORT_EXPENSES("8", "Sort Expenses"),
+        EXIT("0", "Exit");
+
+        private final String option;
+        private final String label;
+
+        MainMenuOption(String option, String label) {
+            this.option = option;
+            this.label = label;
+        }
+
+        private static MainMenuOption fromOption(String option) {
+            MainMenuOption[] options = MainMenuOption.values();
+
+            for (MainMenuOption opt : options) {
+                if (opt.getOption().equals(option)) {
+                    return opt;
+                }
+            }
+
+            return null;
+        }
+
+        private String getOption() {
+            return option;
+        }
+
+        private String getLabel() {
+            return label;
+        }
+    }
+
+    private enum SortMenuOption {
+        SORT_BY_DESCRIPTION("1", "Sort Expenses by Description"),
+        SORT_BY_AMOUNT_ASCENDING("2", "Sort Expenses by Amount Ascending"),
+        SORT_BY_AMOUNT_DESCENDING("3", "Sort Expenses by Amount Descending"),
+        SORT_MENU_EXIT("0", "Back to menu");
+
+        private final String option;
+        private final String label;
+
+        SortMenuOption(String option, String label) {
+            this.option = option;
+            this.label = label;
+        }
+
+        private static SortMenuOption fromOption(String option) {
+            SortMenuOption[] options = SortMenuOption.values();
+
+            for (SortMenuOption opt : options) {
+                if (opt.getOption().equals(option)) {
+                    return opt;
+                }
+            }
+
+            return null;
+        }
+
+        private String getOption() {
+            return option;
+        }
+
+        private String getLabel() {
+            return label;
+        }
     }
 }

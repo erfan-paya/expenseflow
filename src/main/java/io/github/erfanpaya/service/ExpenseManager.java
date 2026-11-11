@@ -2,11 +2,7 @@ package io.github.erfanpaya.service;
 
 import io.github.erfanpaya.model.Expense;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
+import java.util.*;
 
 public class ExpenseManager {
     private final List<Expense> expenses = new ArrayList<>();
@@ -39,6 +35,22 @@ public class ExpenseManager {
         }
 
         return List.copyOf(expensesByCategory);
+    }
+
+    public Map<String, Double> getSpendingByCategory() {
+        Map<String, Double> spendingByCategory = new LinkedHashMap<>();
+
+        for (Expense expense : expenses) {
+            String category = expense.getCategory().toLowerCase(Locale.ROOT);
+            double expenseAmount = expense.getAmount();
+
+            spendingByCategory.put(
+                    category,
+                    spendingByCategory.getOrDefault(category, 0.0) + expenseAmount
+            );
+        }
+
+        return Collections.unmodifiableMap(spendingByCategory);
     }
 
     public List<Expense> getExpensesSortedByDescription() {

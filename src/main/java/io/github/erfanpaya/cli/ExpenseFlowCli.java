@@ -16,12 +16,17 @@ public class ExpenseFlowCli {
     private static final String FILTER_EXPENSES_BY_CATEGORY = "5";
     private static final String VIEW_CATEGORY_SUMMARY = "6";
     private static final String FILTER_EXPENSES_BY_AMOUNT_RANGE = "7";
+    private static final String SORT_EXPENSES = "8";
     private static final String EXIT = "0";
+
+    private static final String SORT_BY_DESCRIPTION = "1";
+    private static final String SORT_BY_AMOUNT_ASCENDING = "2";
+    private static final String SORT_BY_AMOUNT_DESCENDING = "3";
+    private static final String SORT_MENU_EXIT = "0";
 
     private static final String STARS = "****************";
     private static final String BORDER = "==================";
     private static final String SEPARATOR = "------------------";
-
     private final Scanner scanner;
     private final ExpenseManager manager;
 
@@ -48,6 +53,17 @@ public class ExpenseFlowCli {
         System.out.println("Thank you for using ExpenseFlow!");
     }
 
+    private void sortMenuLoop() {
+        boolean running = true;
+        while (running) {
+            displaySortMenu();
+
+            String choice = scanner.nextLine().trim();
+
+            running = handleSortChoice(choice);
+        }
+    }
+
     private boolean handleChoice(String choice) {
         switch (choice) {
             case ADD_EXPENSE -> addExpense();
@@ -57,11 +73,26 @@ public class ExpenseFlowCli {
             case FILTER_EXPENSES_BY_CATEGORY -> filterExpensesByCategory();
             case VIEW_CATEGORY_SUMMARY -> displaySpendingByCategory();
             case FILTER_EXPENSES_BY_AMOUNT_RANGE -> displayExpenseByAmountRange();
+            case SORT_EXPENSES -> sortMenuLoop();
             case EXIT -> {
                 return false;
             }
-            default -> System.out.println("Error: invalid choice, please enter 0-6");
+            default -> System.out.println("Error: invalid choice, please enter 0-8");
         }
+        return true;
+    }
+
+    private boolean handleSortChoice(String choice) {
+        switch (choice) {
+            case SORT_BY_DESCRIPTION -> displaySortedExpenses(manager.getExpensesSortedByDescription());
+            case SORT_BY_AMOUNT_ASCENDING -> displaySortedExpenses(manager.getExpensesSortedByAmountAscending());
+            case SORT_BY_AMOUNT_DESCENDING -> displaySortedExpenses(manager.getExpensesSortedByAmountDescending());
+            case SORT_MENU_EXIT -> {
+                return false;
+            }
+            default -> System.out.println("Error: invalid choice, please enter 0-3");
+        }
+
         return true;
     }
 
@@ -154,7 +185,17 @@ public class ExpenseFlowCli {
         System.out.println(FILTER_EXPENSES_BY_CATEGORY + ". Filter Expenses by Category");
         System.out.println(VIEW_CATEGORY_SUMMARY + ". View Category Summary");
         System.out.println(FILTER_EXPENSES_BY_AMOUNT_RANGE + ". Filter Expenses by Amount Range");
+        System.out.println(SORT_EXPENSES + ". Sort Expenses");
         System.out.println(EXIT + ". Exit");
+        System.out.print("Choose an option: ");
+    }
+
+    private void displaySortMenu() {
+        displayHeader(" Sort Expenses ");
+        System.out.println(SORT_BY_DESCRIPTION + ". Sort Expenses by Description");
+        System.out.println(SORT_BY_AMOUNT_ASCENDING + ". Sort Expenses by Amount Ascending");
+        System.out.println(SORT_BY_AMOUNT_DESCENDING + ". Sort Expenses by Amount Descending");
+        System.out.println(SORT_MENU_EXIT + ". Back to menu");
         System.out.print("Choose an option: ");
     }
 
@@ -257,5 +298,14 @@ public class ExpenseFlowCli {
         }
 
         System.out.println(BORDER);
+    }
+
+    private void displaySortedExpenses(List<Expense> expenses) {
+        if (expenses.isEmpty()) {
+            System.out.println("No expenses recorded yet.");
+            return;
+        }
+
+        displayExpenses(expenses);
     }
 }

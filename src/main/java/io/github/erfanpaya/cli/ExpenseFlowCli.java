@@ -3,7 +3,11 @@ package io.github.erfanpaya.cli;
 import io.github.erfanpaya.model.Expense;
 import io.github.erfanpaya.service.ExpenseManager;
 
-import java.util.*;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Scanner;
+import java.util.UUID;
 
 public class ExpenseFlowCli {
     private static final String STARS = "****************";
@@ -65,6 +69,7 @@ public class ExpenseFlowCli {
             case FILTER_EXPENSES_BY_AMOUNT_RANGE -> displayExpenseByAmountRange();
             case SORT_EXPENSES -> sortMenuLoop();
             case DELETE_EXPENSE -> deleteExpense();
+            case UPDATE_EXPENSE -> updateExpense();
             case EXIT -> {
                 return false;
             }
@@ -109,6 +114,23 @@ public class ExpenseFlowCli {
             System.out.println("Expense deleted successfully!");
         } else {
             System.out.println("Expense not found!");
+        }
+    }
+
+    private void updateExpense() {
+        UUID id = readId("Enter expense id: ");
+
+        int selectedIndex = manager.findExpenseById(id);
+
+        if (selectedIndex == -1) {
+            System.out.println("Expense not found!");
+        } else {
+            String description = readNonBlank("Enter expense description: ", "description");
+            String category = readNonBlank("Enter expense category: ", "category");
+            double amount = readAmount("Enter expense amount: ");
+
+            manager.updateExpense(id, description, category, amount);
+            System.out.println("Expense updated successfully!");
         }
     }
 
@@ -336,6 +358,7 @@ public class ExpenseFlowCli {
         FILTER_EXPENSES_BY_AMOUNT_RANGE("7", "Filter Expenses by Amount Range"),
         SORT_EXPENSES("8", "Sort Expenses"),
         DELETE_EXPENSE("9", "Delete Expense"),
+        UPDATE_EXPENSE("10", "Update Expense"),
         EXIT("0", "Exit");
 
         private final String option;

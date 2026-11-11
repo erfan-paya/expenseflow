@@ -251,12 +251,11 @@ public class ExpenseFlowCli {
 
         if (manager.getExpenseCount() == 0) {
             System.out.println("No expenses recorded yet.");
+            return;
         }
 
         displayExpenses(manager.getExpenses());
-
         System.out.println(BORDER);
-        System.out.println();
     }
 
     private void displayExpenseStatistics() {

@@ -2,7 +2,15 @@ package io.github.erfanpaya.service;
 
 import io.github.erfanpaya.model.Expense;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 
 public class ExpenseManager {
     private final List<Expense> expenses = new ArrayList<>();
@@ -99,15 +107,21 @@ public class ExpenseManager {
         this.expenses.add(expense);
     }
 
-    public boolean removeExpense(UUID id) {
-        int selectedExpenseIndex = -1;
+    public boolean updateExpense(UUID id, String description, String category, double amount) {
+        int selectedExpenseIndex = findExpenseById(id);
 
-        for (int i = 0; i < getExpenseCount(); i++) {
-            if (expenses.get(i).getId().equals(id)) {
-                selectedExpenseIndex = i;
-                break;
-            }
+        if (selectedExpenseIndex == -1) {
+            return false;
         }
+
+        Expense selectedExpense = expenses.get(selectedExpenseIndex);
+        selectedExpense = selectedExpense.withUpdatedDetails(description, category, amount);
+        expenses.set(selectedExpenseIndex, selectedExpense);
+        return true;
+    }
+
+    public boolean removeExpense(UUID id) {
+        int selectedExpenseIndex = findExpenseById(id);
 
         if (selectedExpenseIndex == -1) {
             return false;
@@ -116,6 +130,20 @@ public class ExpenseManager {
         this.expenses.remove(selectedExpenseIndex);
         return true;
 
+    }
+
+    //    ------------- Helpers ---------------
+    
+    public int findExpenseById(UUID id) {
+        int selectedExpenseIndex = -1;
+        for (int i = 0; i < getExpenseCount(); i++) {
+            if (expenses.get(i).getId().equals(id)) {
+                selectedExpenseIndex = i;
+                break;
+            }
+        }
+
+        return selectedExpenseIndex;
     }
 
     public double calculateTotal() {

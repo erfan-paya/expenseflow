@@ -4,6 +4,8 @@ import io.github.erfanpaya.model.Expense;
 import io.github.erfanpaya.service.ExpenseManager;
 
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Scanner;
 
 public class ExpenseFlowCli {
@@ -12,7 +14,8 @@ public class ExpenseFlowCli {
     private static final String VIEW_SUMMARY = "3";
     private static final String SEARCH_EXPENSES = "4";
     private static final String FILTER_EXPENSES_BY_CATEGORY = "5";
-    private static final String EXIT = "6";
+    private static final String VIEW_CATEGORY_SUMMARY = "6";
+    private static final String EXIT = "0";
 
     private static final String STARS = "****************";
     private static final String BORDER = "==================";
@@ -51,10 +54,11 @@ public class ExpenseFlowCli {
             case VIEW_SUMMARY -> displaySummary();
             case SEARCH_EXPENSES -> searchExpenses();
             case FILTER_EXPENSES_BY_CATEGORY -> filterExpensesByCategory();
+            case VIEW_CATEGORY_SUMMARY -> displaySpendingByCategory();
             case EXIT -> {
                 return false;
             }
-            default -> System.out.println("Error: invalid choice, please enter 1-6");
+            default -> System.out.println("Error: invalid choice, please enter 0-6");
         }
         return true;
     }
@@ -134,12 +138,19 @@ public class ExpenseFlowCli {
         System.out.println();
     }
 
+    private void displayHeader(String header) {
+        System.out.println(BORDER);
+        System.out.println(header);
+        System.out.println(BORDER);
+    }
+
     private void displayMenu() {
         System.out.println(ADD_EXPENSE + ". Add Expense");
         System.out.println(VIEW_ALL + ". View All Expenses");
         System.out.println(VIEW_SUMMARY + ". View Expense Summary");
         System.out.println(SEARCH_EXPENSES + ". Search Expenses");
         System.out.println(FILTER_EXPENSES_BY_CATEGORY + ". Filter Expenses by Category");
+        System.out.println(VIEW_CATEGORY_SUMMARY + ". View Category Summary");
         System.out.println(EXIT + ". Exit");
         System.out.print("Choose an option: ");
     }
@@ -153,9 +164,7 @@ public class ExpenseFlowCli {
     }
 
     private void displayAllExpenses() {
-        System.out.println(BORDER);
-        System.out.println(" All Expenses ");
-        System.out.println(BORDER);
+        displayHeader(" All Expenses ");
 
         if (manager.getExpenseCount() == 0) {
             System.out.println("No expenses recorded yet.");
@@ -165,12 +174,6 @@ public class ExpenseFlowCli {
 
         System.out.println(BORDER);
         System.out.println();
-    }
-
-    private void displaySummaryHeader() {
-        System.out.println(BORDER);
-        System.out.println(" Expense Summary ");
-        System.out.println(BORDER);
     }
 
     private void displayExpenseStatistics() {
@@ -187,7 +190,7 @@ public class ExpenseFlowCli {
     }
 
     private void displaySummary() {
-        displaySummaryHeader();
+        displayHeader(" Expenses Summary ");
 
         if (manager.getExpenseCount() == 0) {
             displayExpenseStatistics();
@@ -204,6 +207,27 @@ public class ExpenseFlowCli {
         System.out.printf("Average expense: %.2f%n", manager.calculateAverage());
 
         displayMostAndCheapestExpenses();
+        System.out.println(BORDER);
+    }
+
+    private void displaySpendingByCategory() {
+        displayHeader(" Spending by Category ");
+
+        Map<String, Double> spendingByCategory = manager.getSpendingByCategory();
+
+        if (spendingByCategory.isEmpty()) {
+            System.out.println("No spending expenses found.");
+            System.out.println(BORDER);
+            return;
+        }
+
+        for (Map.Entry<String, Double> entry : spendingByCategory.entrySet()) {
+            String capKey = entry.getKey().substring(0, 1).toUpperCase(Locale.ROOT) + entry.getKey().substring(1);
+            System.out.printf("%s: %.2f%n", capKey, entry.getValue());
+        }
+
+        System.out.println(SEPARATOR);
+        System.out.printf("Total spending: %.2f%n", manager.calculateTotal());
         System.out.println(BORDER);
     }
 }

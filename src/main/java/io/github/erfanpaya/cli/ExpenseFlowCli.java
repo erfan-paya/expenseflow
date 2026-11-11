@@ -3,10 +3,7 @@ package io.github.erfanpaya.cli;
 import io.github.erfanpaya.model.Expense;
 import io.github.erfanpaya.service.ExpenseManager;
 
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
 public class ExpenseFlowCli {
     private static final String STARS = "****************";
@@ -67,6 +64,7 @@ public class ExpenseFlowCli {
             case VIEW_CATEGORY_SUMMARY -> displaySpendingByCategory();
             case FILTER_EXPENSES_BY_AMOUNT_RANGE -> displayExpenseByAmountRange();
             case SORT_EXPENSES -> sortMenuLoop();
+            case DELETE_EXPENSE -> deleteExpense();
             case EXIT -> {
                 return false;
             }
@@ -104,6 +102,16 @@ public class ExpenseFlowCli {
         System.out.println();
     }
 
+    private void deleteExpense() {
+        UUID id = readId("Enter expense id: ");
+
+        if (manager.removeExpense(id)) {
+            System.out.println("Expense deleted successfully!");
+        } else {
+            System.out.println("Expense not found!");
+        }
+    }
+
     private void searchExpenses() {
         String description = readNonBlank("Enter expense description: ", "description");
         List<Expense> selectedExpenses = manager.getExpensesByDescription(description);
@@ -133,6 +141,18 @@ public class ExpenseFlowCli {
     }
 
     // ---------- Input helpers ----------
+
+    private UUID readId(String prompt) {
+        while (true) {
+            System.out.print(prompt);
+            try {
+                return UUID.fromString(scanner.nextLine().trim());
+            } catch (IllegalArgumentException e) {
+                System.out.println("Error: Please enter a valid expense ID.");
+            }
+        }
+    }
+
 
     private String readNonBlank(String prompt, String fieldName) {
         while (true) {
@@ -200,7 +220,7 @@ public class ExpenseFlowCli {
         int index = 1;
 
         for (Expense expense : expenses) {
-            System.out.printf("%d. %s%n", index++, expense);
+            System.out.printf("%d. UUID: %s%n%s%n", index++, expense.getId(), expense);
         }
     }
 
@@ -315,6 +335,7 @@ public class ExpenseFlowCli {
         VIEW_CATEGORY_SUMMARY("6", "View Category Summary"),
         FILTER_EXPENSES_BY_AMOUNT_RANGE("7", "Filter Expenses by Amount Range"),
         SORT_EXPENSES("8", "Sort Expenses"),
+        DELETE_EXPENSE("9", "Delete Expense"),
         EXIT("0", "Exit");
 
         private final String option;

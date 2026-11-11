@@ -2,14 +2,7 @@ package io.github.erfanpaya.service;
 
 import io.github.erfanpaya.model.Expense;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class ExpenseManager {
     private final List<Expense> expenses = new ArrayList<>();
@@ -104,6 +97,25 @@ public class ExpenseManager {
     public void addExpense(Expense expense) {
         Objects.requireNonNull(expense, "Expense cannot be null");
         this.expenses.add(expense);
+    }
+
+    public boolean removeExpense(UUID id) {
+        int selectedExpenseIndex = -1;
+
+        for (int i = 0; i < getExpenseCount(); i++) {
+            if (expenses.get(i).getId().equals(id)) {
+                selectedExpenseIndex = i;
+                break;
+            }
+        }
+
+        if (selectedExpenseIndex == -1) {
+            return false;
+        }
+
+        this.expenses.remove(selectedExpenseIndex);
+        return true;
+
     }
 
     public double calculateTotal() {

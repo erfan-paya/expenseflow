@@ -15,6 +15,7 @@ public class ExpenseFlowCli {
     private static final String SEARCH_EXPENSES = "4";
     private static final String FILTER_EXPENSES_BY_CATEGORY = "5";
     private static final String VIEW_CATEGORY_SUMMARY = "6";
+    private static final String FILTER_EXPENSES_BY_AMOUNT_RANGE = "7";
     private static final String EXIT = "0";
 
     private static final String STARS = "****************";
@@ -55,6 +56,7 @@ public class ExpenseFlowCli {
             case SEARCH_EXPENSES -> searchExpenses();
             case FILTER_EXPENSES_BY_CATEGORY -> filterExpensesByCategory();
             case VIEW_CATEGORY_SUMMARY -> displaySpendingByCategory();
+            case FILTER_EXPENSES_BY_AMOUNT_RANGE -> displayExpenseByAmountRange();
             case EXIT -> {
                 return false;
             }
@@ -66,7 +68,7 @@ public class ExpenseFlowCli {
     private void addExpense() {
         String description = readNonBlank("Enter expense description: ", "description");
         String category = readNonBlank("Enter expense category: ", "category");
-        double amount = readAmount();
+        double amount = readAmount("Enter expense amount: ");
 
         manager.addExpense(new Expense(description, category, amount));
         System.out.println("Expense added successfully!");
@@ -115,9 +117,9 @@ public class ExpenseFlowCli {
         }
     }
 
-    private double readAmount() {
+    private double readAmount(String prompt) {
         while (true) {
-            System.out.print("Enter expense amount: ");
+            System.out.print(prompt);
             try {
                 double amount = Double.parseDouble(scanner.nextLine().trim());
                 if (amount > 0 && Double.isFinite(amount)) {
@@ -151,6 +153,7 @@ public class ExpenseFlowCli {
         System.out.println(SEARCH_EXPENSES + ". Search Expenses");
         System.out.println(FILTER_EXPENSES_BY_CATEGORY + ". Filter Expenses by Category");
         System.out.println(VIEW_CATEGORY_SUMMARY + ". View Category Summary");
+        System.out.println(FILTER_EXPENSES_BY_AMOUNT_RANGE + ". Filter Expenses by Amount Range");
         System.out.println(EXIT + ". Exit");
         System.out.print("Choose an option: ");
     }
@@ -228,6 +231,31 @@ public class ExpenseFlowCli {
 
         System.out.println(SEPARATOR);
         System.out.printf("Total spending: %.2f%n", manager.calculateTotal());
+        System.out.println(BORDER);
+    }
+
+    private void displayExpenseByAmountRange() {
+        displayHeader(" Expenses by Amount Range ");
+
+        while (true) {
+            double min = readAmount("Enter minimum amount: ");
+            double max = readAmount("Enter maximum amount: ");
+
+            try {
+                List<Expense> expenses = manager.getExpensesByAmountRange(min, max);
+
+                if (expenses.isEmpty()) {
+                    System.out.println("No expenses found in this amount range.");
+                } else {
+                    displayExpenses(expenses);
+                }
+
+                break;
+            } catch (IllegalArgumentException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+
         System.out.println(BORDER);
     }
 }

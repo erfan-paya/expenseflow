@@ -1,9 +1,12 @@
 package io.github.erfanpaya.model;
 
+import java.util.UUID;
+
 public class Expense {
     private final String description;
     private final String category;
     private final double amount;
+    private final UUID id;
 
     public Expense(String description, String category, double amount) {
         if (!validateDescription(description)) {
@@ -16,6 +19,7 @@ public class Expense {
             throw new IllegalArgumentException("Invalid amount");
         }
 
+        this.id = UUID.randomUUID();
         this.description = description;
         this.category = category;
         this.amount = amount;
@@ -50,5 +54,9 @@ public class Expense {
     public String toString() {
         return String.format("%s -> %s -> %.2f",
                 this.getDescription(), this.getCategory(), this.getAmount());
+    }
+
+    public UUID getId() {
+        return id;
     }
 }
